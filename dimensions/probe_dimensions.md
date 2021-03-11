@@ -13,4 +13,4 @@ We started with a dummy probe.
 
 15.6 wide x 14.5 high x 3.6 thick
 
-<img src="neuropixels_headstage1_0.jpg" alt="np dimensions in mm" width="200"/>
+<img src="neuropixels_headstage1_0.jpg" alt="np dimensions in mm" width="300"/>
