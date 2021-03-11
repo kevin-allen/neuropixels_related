@@ -17,3 +17,18 @@ For the first experiments, we will not use a microdrive system. Matteo Carandini
 
 
 
+## Probe plate
+
+A plate on which we glue the probe. 
+It needs 2 nuts near middle for recovery and to hold the probe when implanting.
+It needs 3 screw holes to attach the probe plate to the casing. Two very low and one higher up to support the long probe plate.
+We could use M1.2 screws and nuts for extra strength.
+
+
+## Probe plate casing
+
+Cemented to the skull and base when implanting.
+It needs to provide a very solid and stable platform for the probe plate.
+
+
+
