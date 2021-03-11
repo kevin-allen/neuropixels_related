@@ -10,10 +10,10 @@ For the first experiments, we will not use a microdrive system. Matteo Carandini
 ## Parts
 
 1. Probe plate: hold the microdrive
-2. Probe plate casing: is cemented to the skull skull. The probe plate is attache to this via 2 screws
-3. Base: attached to the skull, provide additional anchor and interface with skin.
+2. Probe plate casing: is cemented to the skull skull and base. The probe plate is screwed to this before implantation
+3. Base: attached to the skull. Provide anchor to skull.
 4. Lid: covers all the material
-5. Connector plate: Hold the connector to plug the animal.
+5. Connector plate: Hold the headstage and connector to plug the animal.
 
-## Probe plate
+
 
