@@ -6,4 +6,4 @@
 We started with a dummy probe.
 
 
-<img src="dimensionsneuropixels1_0.png" alt="np dimensions in mm" width="400"/>
+<img src="neuropixels1_0.png" alt="np dimensions in mm" width="600"/>
