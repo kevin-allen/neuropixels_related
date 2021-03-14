@@ -95,6 +95,14 @@ probeTransitionZ = 1.0;
 probePcbS=[8,1.4,11.4];
 probeShankS = [0.3,0.3,11.9];
 
+// Neuropixels1.0 pcb
+module pcb(x=15.6, y =3.6, z = 14.5)
+{
+    translate([-x/2,-y/2,0])cube([x,y,z]);
+    
+}
+
+
 
 // this is a Neuropixels1.0 probe
 module probe(boxS=[6.2, 1.8,10.4],
@@ -236,14 +244,174 @@ module probePlateCasing(lowerOutDia=4.5,
                frontY,
                coneHeight+1-nutHeight-aboveNutHeight-belowNutHeight]) rotate([0,0,90])captive_nut(height_nut=nutHeight, height_below=belowNutHeight, height_above=aboveNutHeight,positive=false);
 }
-
-    
-    
-    
+  
 }
 
 
 
-probePlate();
-//color("blue")translate([0,0.7,0])probe();
-translate([0,0,6.5])probePlateCasing();
+
+
+
+/* level 0
+part that goes against the skull */
+module skull_plate(AP_length=11.0,ML_length_posterior=6.0,ML_length_anterior=2.5,ML_length_mid=8.5,height=0.5,corner_radius=0.25){
+    difference(){
+    hull(){
+    translate([AP_length/2-corner_radius,ML_length_anterior/2,0])cylinder(r=corner_radius,h=height);
+    translate([AP_length/2-corner_radius,-ML_length_anterior/2,0])cylinder(r=corner_radius,h=height);
+    
+    translate([-1,ML_length_mid/2-corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([-1,-ML_length_mid/2+corner_radius,0])cylinder(r=corner_radius,h=height);
+    
+    translate([1,ML_length_mid/2-corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([1,-ML_length_mid/2+corner_radius,0])cylinder(r=corner_radius,h=height);
+        
+        
+    translate([-AP_length/2+corner_radius, ML_length_posterior/2-corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([-AP_length/2+corner_radius,-ML_length_posterior/2+corner_radius,0])cylinder(r=corner_radius,h=height);
+    }
+    //translate([-AP_length/2-1,0,-10+0.5])rotate([0,90,0])cylinder(h=100,r=10);
+}
+}
+
+/* level 0
+part that goes against the skull*/
+module skull_wall(height=0.5, shape=1){
+    
+    if(shape==1){ // the plate
+    
+    skull_plate(AP_length=11.3,ML_length_posterior=6.0,ML_length_anterior=3,ML_length_mid=9,height=height,corner_radius=0.25);
+    } 
+    if(shape==2){ // hole inside
+    // inside hole
+    translate([0,0,-0.1])
+        skull_plate(AP_length=8.5,ML_length_posterior=5.0,ML_length_anterior=2.0,ML_length_mid=7.5,height=height+1,corner_radius=0.25);
+    }
+    if(shape==3){ // screws
+    // ground screws
+        hull(){
+    translate([-11.0/2+1.2,-1.5,-0.1])cylinder(r=1.4,h=height+5);
+    translate([-11.0/2+1.2,1.5,-0.1])cylinder(r=1.4,h=height+5);
+        }
+    // anchoring scew at the front
+        hull(){
+    translate([11.0/2-0.5,-1,-0.1])cylinder(r=1.4,h=height+1); 
+    translate([11.0/2-1.5,-1,-0.1])cylinder(r=1.4,h=height+1); 
+        }
+    }
+}
+
+/* level 1
+wider base to build up vertical walls
+*/
+module base_plate(height=0.1,width=11,length=10.5,corner_radius=0.5){
+    hull(){
+    translate([length/2-corner_radius,width/2-corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([-length/2+corner_radius,width/2-corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([length/2-corner_radius,-width/2+corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([-length/2+corner_radius,-width/2+corner_radius,0])cylinder(r=corner_radius,h=height);
+    translate([length/2,0,0])scale([0.7,1,1])cylinder(r=width/2,h=height);
+    }
+   
+}
+
+/* level 1
+wider base to build up vertical walls
+*/
+module base_wall(height=0.2,positive=true){
+   if(positive){
+        base_plate(height=height,width=11,length=10.5,corner_radius=0.5);
+   }
+   else{
+        translate([0,0,-0.01])base_plate(height=height,width=9.2,length=9.5,corner_radius=0.5);
+    }
+}
+
+/* 
+Base of the head stage. This is attach to the skull
+*/
+module base(height_skull=1, height_base_wall=2.7, attachment_nut=true, pcb_block=true){
+
+/* to get a vertical wall to build on skull only
+    this is the part attached directly to the skull
+*/
+
+// part close to the skull
+translate([0,0,-1])difference(){
+translate([0,0,0.0])skull_wall(height=height_skull);
+translate([0,0,0.0])skull_wall(height=height_skull,shape=2);
+// round shape of the skull
+translate([-10,0,-14.5])rotate([0,90,0])cylinder($fn=50,r=15,h=20);
+    skull_wall(height=0.5,shape=3);
+}
+
+/*
+  from skull attachement to vertical walls
+*/
+difference(){   
+hull(){
+translate([0,0,0])skull_wall(height=height_skull);
+translate([-1,0,0.5])base_wall(height=height_base_wall);
+}
+
+/* make a hole inside the base for microdrive */
+hull(){
+translate([0,0,.05])skull_wall(height=0.5,shape=2);
+translate([-1,0,0.9])base_wall(height=5,positive=false);
+}
+/* dig holes for ground and anchor screws */ 
+skull_wall(shape=3);
+
+/* make space for pcb_block at the back*/
+if(pcb_block){
+    translate([-7,-0,1.5]) pcb_attachment_block(x=2.9,y=7.9,z=4,block_only=true);
+}
+
+if(attachment_nut){
+    translate([0,13/2,0.5])rotate([0,0,90])captive_nut(positive=false); // ensure the space for the nut is free
+    translate([0,-13/2,0.5])rotate([0,0,-90])captive_nut(positive=false);
+}
+}
+if(attachment_nut){
+/* attachment nuts for lid */
+translate([0,13/2,0.5])rotate([0,0,90])captive_nut();
+translate([0,-13/2,0.5])rotate([0,0,-90])captive_nut();
+}
+if(pcb_block){
+/* attachment block for pcb plate*/
+   translate([-7,-0,1.5]) pcb_attachment_block(x=3,y=8,z=4);   
+
+// add material to solidify the pcb_block
+difference(){
+difference(){
+translate([-1,0,0.5+height_base_wall])base_wall(height=2.33);
+translate([-1,0,0.5+height_base_wall])base_wall(height=3,positive=false);
+    }
+translate([-2,-15,0.5+height_base_wall+0.01])cube([30,30,30]);
+translate([-7,-4,0.5+0.01])cube([30,8,30]);
+}
+// add material to close the hole at the side of the block when the lid is on.
+hull(){ // side 1
+translate([-8,6,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+translate([-8,4,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+translate([-6,4,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+translate([-5.8,5,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+}
+hull(){ // side 2
+translate([-8,-6,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+translate([-8,-4,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+translate([-6,-4,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+translate([-5.8,-5,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
+}
+
+
+}
+}
+
+
+
+//rotate([0,0,90])base();
+translate([0,-10,5])color("green") pcb();
+translate([0,0,-7])probePlate();
+color("blue")translate([0,0.7,-7])probe();
+translate([0,0,0])probePlateCasing();
