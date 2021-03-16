@@ -130,12 +130,12 @@ module probe(boxS=[6.2, 1.8,10.4],
 
 // plate to mount the probe on
 module probePlate(plateS=[8,2.5,23.8],
-                  tol = 0.5,
+                  tol = 0.3,
                   shankHeight=12,
-                  screwXSpacing=7,
-                  screwZSpacing=15,
+                  caseScrewXSpacing=7,
                   screwWidth=3.0,
                   screwBackFrontSpacing=8.3,
+                  holderScrewXSpacing=10.2,
                   nutHeight = 1, 
                   belowNutHeight=1.1, 
                   aboveNutHeight=0.6,
@@ -156,28 +156,38 @@ module probePlate(plateS=[8,2.5,23.8],
     }
     }
     // remove the probe
-    translate([0,0.6,0])probe(boxS=[probeBoxS[0]+tol,probeBoxS[1],probeBoxS[2]],
+    translate([0,0.6,0])probe(boxS=[probeBoxS[0]+tol,probeBoxS[1],probeBoxS[2]+0.7], // 0.5 is there to raise the probe relative to the probePlate
                             pcbS=[probePcbS[0]+tol,probePcbS[1],probePcbS[2]+2]);
+    
+    // remove the space for the nuts 
+   extraBelow=1.5;
+   extraHeight=1; // so that the holder does not touch the ribbon
+   translate([-holderScrewXSpacing/2, -screwWidth/2-.4,
+               plateS[2]+shankHeight-nutHeight -belowNutHeight - aboveNutHeight-extraBelow+extraHeight]) rotate([0,0,270])captive_nut(height_nut=nutHeight, height_below=belowNutHeight+extraBelow, height_above=aboveNutHeight,positive=false);
+   translate([holderScrewXSpacing/2, -screwWidth/2-0.4,
+               plateS[2]+shankHeight-nutHeight -belowNutHeight - aboveNutHeight-extraBelow+extraHeight]) rotate([0,0,270])captive_nut(height_nut=nutHeight, height_below=belowNutHeight+extraBelow, height_above=aboveNutHeight,positive=false);
+    
+    
    }
-   
-   
    
    // add 3 attachment/hole for screws that will secure the probePlate to the probePlateCasing
     yBack=-screwWidth/2-plateS[1]/2;
     yFront=yBack+screwBackFrontSpacing;
-    translate([-screwXSpacing/2,yBack,shankHeight])rotate([0,0,90])narrowNut(height=4.5,width = screwWidth,hole_diameter=1.3);
-    translate([screwXSpacing/2,yBack,shankHeight])rotate([0,0,90])narrowNut(height=4.5,width = screwWidth,hole_diameter=1.3);
+    translate([-caseScrewXSpacing/2,yBack,shankHeight])rotate([0,0,90])narrowNut(height=4.5,width = screwWidth,hole_diameter=1.3);
+    translate([caseScrewXSpacing/2,yBack,shankHeight])rotate([0,0,90])narrowNut(height=4.5,width = screwWidth,hole_diameter=1.3);
    translate([0,yFront,shankHeight])rotate([0,0,90])narrowNut(height=4.5,width = screwWidth,hole_diameter=1.3); 
  
    
    
    
    // add 2 captive nuts to connect to the stereotaxic arm
-   extraBelow=1.5;
-   translate([-screwXSpacing/2, -screwWidth/2-plateS[1]/2,
-               plateS[2]+shankHeight-nutHeight -belowNutHeight - aboveNutHeight-extraBelow]) rotate([0,0,270])captive_nut(height_nut=nutHeight, height_below=belowNutHeight+extraBelow, height_above=aboveNutHeight);
-   translate([screwXSpacing/2, -screwWidth/2-plateS[1]/2,
-               plateS[2]+shankHeight-nutHeight -belowNutHeight - aboveNutHeight-extraBelow]) rotate([0,0,270])captive_nut(height_nut=nutHeight, height_below=belowNutHeight+extraBelow, height_above=aboveNutHeight);
+   extraBelow=1.5; // to add material to the nut catcher
+   extraHeight=1; // so that the holder does not touch the ribbon
+   
+   translate([-holderScrewXSpacing/2, -screwWidth/2-.4,
+               plateS[2]+shankHeight-nutHeight -belowNutHeight - aboveNutHeight-extraBelow+extraHeight]) rotate([0,0,270])captive_nut(height_nut=nutHeight, height_below=belowNutHeight+extraBelow, height_above=aboveNutHeight);
+   translate([holderScrewXSpacing/2, -screwWidth/2-0.4,
+               plateS[2]+shankHeight-nutHeight -belowNutHeight - aboveNutHeight-extraBelow+extraHeight]) rotate([0,0,270])captive_nut(height_nut=nutHeight, height_below=belowNutHeight+extraBelow, height_above=aboveNutHeight);
    
    
    
@@ -411,7 +421,7 @@ translate([-5.8,-5,0.5+height_base_wall+2.3-1])cylinder(h=1,r=0.5);
 
 
 //rotate([0,0,90])base();
-translate([0,-10,5])color("green") pcb();
+//translate([0,-10,5])color("green") pcb();
 translate([0,0,-7])probePlate();
-color("blue")translate([0,0.7,-7])probe();
-translate([0,0,0])probePlateCasing();
+//color("blue")translate([0,0.7,-6.5])probe();
+//translate([0,0,0])probePlateCasing();
